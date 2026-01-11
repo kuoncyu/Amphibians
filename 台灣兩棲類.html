@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>台灣兩棲類全圖鑑 (完整版)</title>
+    <style>
+        :root {
+            /* 兩棲類主題色：潮濕的森林綠與水藍 */
+            --primary: #00695c;   /* 深青綠 */
+            --secondary: #26a69a; /* 淺青綠 */
+            --accent: #ffb74d;    /* 蛙眼黃橘 */
+            --bg: #e0f2f1;        /* 極淺青背景 */
+            --text: #263238;
+            --card-bg: #ffffff;
+            
+            /* 狀態標籤顏色 */
+            --status-common: #558b2f;  /* 常見：草綠 */
+            --status-endemic: #7b1fa2; /* 特有種：紫 */
+            --status-conservation: #c62828; /* 保育類：紅 */
+            --status-invasive: #424242; /* 外來種：深灰 */
+            --status-salamander: #795548; /* 山椒魚：褐 */
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: "Noto Sans TC", "Microsoft JhengHei", -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            padding-bottom: 80px;
+            overflow-x: hidden;
+        }
+
+        /* --- Header --- */
+        header {
+            background: linear-gradient(135deg, #004d40, #00796b);
+            color: white;
+            padding: 1.2rem 1rem;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            position: sticky; top: 0;
+            z-index: 100;
+        }
+        h1 { margin: 0; font-size: 1.5rem; letter-spacing: 1.5px; }
+        .subtitle { font-size: 0.8rem; opacity: 0.9; margin-top: 5px; }
+
+        /* --- Navigation --- */
+        .nav {
+            display: flex;
+            justify-content: flex-start;
+            gap: 10px; 
+            padding: 10px 15px;
+            background: white; 
+            border-bottom: 1px solid #b2dfdb;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 78px; z-index: 90;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .nav::-webkit-scrollbar { display: none; }
+        
+        .nav-btn {
+            padding: 8px 18px;
+            border: none; border-radius: 50px;
+            background: #eceff1; color: #546e7a; cursor: pointer;
+            font-weight: bold; transition: all 0.2s; 
+            font-size: 0.9rem; white-space: nowrap;
+            flex-shrink: 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .nav-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 2px 5px rgba(0, 105, 92, 0.4);
+        }
+
+        .container { 
+            max-width: 1000px;
+            margin: 0 auto; padding: 15px; 
+            min-height: 80vh;
+        }
+        .section { display: none; animation: fadeIn 0.3s ease-out; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- Daily Card --- */
+        .daily-container { width: 100%; max-width: 480px; margin: 0 auto; text-align: center; }
+        
+        .card-scene {
+            perspective: 1000px;
+            width: 100%; 
+            height: min(580px, 65vh);
+            margin: 20px auto; 
+            position: relative;
+        }
+        .card-inner {
+            position: relative;
+            width: 100%; height: 100%; text-align: center;
+            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            transform-style: preserve-3d;
+        }
+        .card-inner.is-flipped { transform: rotateY(180deg); }
+        
+        .card-face {
+            position: absolute;
+            width: 100%; height: 100%;
+            backface-visibility: hidden; 
+            -webkit-backface-visibility: hidden;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            overflow: hidden;
+            background: white;
+        }
+        
+        .card-front {
+            background: linear-gradient(135deg, #26a69a, #4db6ac);
+            color: white; border: 4px solid #e0f2f1;
+            z-index: 2;
+            cursor: pointer;
+        }
+        .card-back {
+            transform: rotateY(180deg);
+            padding: 0; justify-content: flex-start;
+            border: 1px solid #ddd;
+            background: #fdfdfd;
+            z-index: 1;
+        }
+        
+        .daily-img-wrapper { 
+            width: 100%;
+            height: 55%; 
+            background: #212121; 
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: zoom-in;
+        }
+        .daily-img { 
+            width: 100%;
+            height: 100%; 
+            object-fit: contain; 
+            display: block;
+        }
+        .zoom-hint {
+            position: absolute;
+            bottom: 10px; right: 10px;
+            background: rgba(0,0,0,0.6);
+            color: white; padding: 6px 10px;
+            border-radius: 20px; font-size: 0.75rem;
+            pointer-events: none;
+            display: flex; align-items: center; gap: 5px;
+        }
+
+        .daily-info-box { 
+            padding: 20px;
+            text-align: left; height: 45%; 
+            overflow-y: auto; box-sizing: border-box; 
+            -webkit-overflow-scrolling: touch;
+        }
+        .daily-date { 
+            background: rgba(0,0,0,0.2);
+            padding: 5px 15px; border-radius: 20px; 
+            margin-bottom: 20px; font-size: 0.9rem; letter-spacing: 1px;
+        }
+
+        /* --- Tools & Grid --- */
+        .tools-bar {
+            background: white;
+            padding: 15px; border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px;
+            border: 1px solid #b2dfdb;
+        }
+        .search-box {
+            width: 100%;
+            padding: 10px; border: 2px solid #80cbc4;
+            border-radius: 8px; font-size: 1rem; box-sizing: border-box; margin-bottom: 12px;
+            -webkit-appearance: none;
+        }
+        .filter-scroll { 
+            display: flex;
+            gap: 8px; overflow-x: auto; padding-bottom: 5px; 
+            scrollbar-width: none; -webkit-overflow-scrolling: touch;
+        }
+        .filter-tag {
+            white-space: nowrap;
+            padding: 6px 14px; border-radius: 15px;
+            background: #e0f2f1; border: 1px solid #4db6ac; cursor: pointer; 
+            font-size: 0.85rem; color: #00695c; flex-shrink: 0;
+        }
+        .filter-tag.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+        .plant-grid { 
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 15px; 
+        }
+        .plant-card {
+            background: var(--card-bg);
+            border-radius: 12px; padding: 15px 10px; text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); cursor: pointer; 
+            border: 1px solid #f1f1f1;
+            display: flex;
+            flex-direction: column; justify-content: center; min-height: 110px;
+            position: relative;
+        }
+        @media (hover: hover) {
+            .plant-card:hover { transform: translateY(-5px);
+            border-color: var(--secondary); box-shadow: 0 10px 15px -5px rgba(0,0,0,0.1); transition: 0.2s;
+            }
+        }
+        .plant-card:active { transform: scale(0.98); background: #f9f9f9; }
+
+        .p-name { font-weight: bold; font-size: 1rem; color: #004d40; margin-bottom: 5px; }
+        .p-cat { font-size: 0.75rem; color: #00796b; margin-bottom: 8px; }
+        
+        .status-badge {
+            font-size: 0.7rem;
+            color: white; padding: 3px 8px; border-radius: 10px;
+            display: inline-block; font-weight: bold; margin-top: auto;
+        }
+        .st-endemic { background: var(--status-endemic); }
+        .st-common { background: var(--status-common); }
+        .st-conservation { background: var(--status-conservation); }
+        .st-invasive { background: var(--status-invasive); }
+        .st-salamander { background: var(--status-salamander); }
+
+        /* --- Quiz --- */
+        .quiz-panel {
+            background: white;
+            padding: 25px 20px; border-radius: 16px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: center;
+            max-width: 600px; margin: 0 auto;
+            border: 1px solid #eee;
+        }
+        .q-media-box {
+            height: 280px;
+            background: #fafafa; border: 2px dashed #80cbc4;
+            border-radius: 12px; margin: 20px 0; display: flex;
+            align-items: center; justify-content: center; position: relative;
+            overflow: hidden;
+        }
+        .full-img { max-width: 100%; max-height: 100%; object-fit: contain; display: none; }
+        
+        .opt-btn {
+            width: 100%;
+            padding: 14px; margin-bottom: 10px; background: white;
+            border: 2px solid #b2dfdb; border-radius: 10px; font-size: 0.95rem;
+            cursor: pointer; font-weight: bold; color: #00695c;
+            touch-action: manipulation;
+        }
+        .opt-btn:active { background: #e0f2f1; }
+        .opt-btn.correct { background: #b2dfdb; border-color: #26a69a; color: #004d40; }
+        .opt-btn.wrong { background: #ffcdd2; border-color: #ef5350; color: #b71c1c; }
+
+        /* --- Modal --- */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 2000;
+            display: none; justify-content: center; align-items: center; padding: 15px;
+            backdrop-filter: blur(5px);
+            touch-action: none;
+        }
+        .modal-box {
+            background: white;
+            width: 100%; max-width: 500px;
+            border-radius: 16px; overflow: hidden; display: flex; flex-direction: column;
+            max-height: 85vh;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            animation: popUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
+        .img-area { 
+            height: 40vh;
+            background: #000; display: flex; align-items: center; justify-content: center; 
+        }
+        .info-area { padding: 20px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+        
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary);
+            border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .reveal-box {
+            background: #e0f2f1;
+            border: 1px solid #b2dfdb; border-radius: 12px;
+            padding: 15px; text-align: left; margin-top: 15px; display: none;
+        }
+
+        @media (min-width: 768px) {
+            .container { padding: 30px; }
+            .plant-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+            .nav { justify-content: center; top: 85px; }
+            .card-scene { height: 550px; }
+            h1 { font-size: 2rem; }
+            .img-area { height: 300px; }
+        }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🐸 台灣兩棲類全圖鑑</h1>
+    <div class="subtitle">完整收錄台灣 43 種蛙類與山椒魚</div>
+</header>
+
+<div class="nav">
+    <button class="nav-btn active" onclick="setTab('daily', this)">🔮 每日一蛙</button>
+    <button class="nav-btn" onclick="setTab('guide', this)">📖 生態圖鑑</button>
+    <button class="nav-btn" onclick="setTab('quiz', this)">🌲 蛙蛙大會考</button>
+</div>
+
+<div class="container">
+
+    <div id="sec-daily" class="section active">
+        <div class="daily-container">
+            <h2 style="color:var(--primary); margin: 0 0 5px 0; font-size: 1.3rem;">📅 今天的兩棲朋友</h2>
+            <p style="color:#666; font-size:0.85rem; margin-top: 0;">探索台灣濕地與森林的夜精靈</p>
+            
+            <div class="card-scene">
+                <div class="card-inner" id="daily-card-inner">
+                    <div class="card-face card-front" onclick="flipDailyCard()">
+                        <div style="font-size:4rem; margin-bottom:10px; text-shadow: 0 4px 10px rgba(0,0,0,0.3);">🐸</div>
+                        <h2 style="letter-spacing: 2px; font-size: 1.5rem;">DAILY FROG</h2>
+                        <div class="daily-date" id="daily-date-display">...</div>
+                        <p style="opacity: 0.9; font-size: 0.9rem;">點擊翻開</p>
+                    </div>
+                    
+                    <div class="card-face card-back">
+                        <div class="daily-img-wrapper" onclick="openDailyZoom()">
+                            <img id="daily-img" class="daily-img" src="" alt="Amphibian">
+                            <div class="loader" id="daily-loader" style="position:absolute; top:45%; left:45%;"></div>
+                            <div class="zoom-hint">🔍 點圖放大</div>
+                        </div>
+                        <div class="daily-info-box">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <h2 id="daily-name" style="margin:0; color:var(--primary); font-size: 1.4rem;">載入中...</h2>
+                                <span id="daily-status" class="status-badge"></span>
+                            </div>
+                            <p id="daily-eng" style="color:#78909c; font-style:italic; font-size:0.85rem; margin-top:2px;"></p>
+                            <hr style="border:0; border-top:1px solid #eee; margin:10px 0;">
+                            <p id="daily-desc" style="line-height:1.6; color:#546e7a; font-size:0.9rem;">
+                                連線中...
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sec-guide" class="section">
+        <div class="tools-bar">
+            <input type="text" id="search-input" class="search-box" placeholder="搜尋 (如：臺北樹蛙, 蟾蜍)..." onkeyup="renderGuide()">
+            <div class="filter-scroll">
+                <div class="filter-tag active" onclick="setFilter('all', this)">全部</div>
+                <div class="filter-tag" onclick="setFilter('樹蛙', this)">樹蛙科</div>
+                <div class="filter-tag" onclick="setFilter('赤蛙', this)">赤蛙/叉舌蛙</div>
+                <div class="filter-tag" onclick="setFilter('蟾蜍', this)">蟾蜍科</div>
+                <div class="filter-tag" onclick="setFilter('樹蟾', this)">樹蟾科</div>
+                <div class="filter-tag" onclick="setFilter('狹口蛙', this)">狹口蛙科</div>
+                <div class="filter-tag" onclick="setFilter('山椒魚', this)">山椒魚科</div>
+                <div class="filter-tag" onclick="setFilter('特有種', this)">特有種</div>
+                <div class="filter-tag" onclick="setFilter('保育', this)">保育類</div>
+                <div class="filter-tag" onclick="setFilter('外來種', this)">外來種</div>
+            </div>
+            <div style="text-align:right; font-size:0.75rem; color:#888; margin-top:8px;">
+                資料庫：<span id="db-count">0</span> 種
+            </div>
+        </div>
+        <div id="guide-grid" class="plant-grid"></div>
+    </div>
+
+    <div id="sec-quiz" class="section">
+        <div id="quiz-menu" class="quiz-panel">
+            <h2 style="color:var(--primary); font-size: 1.4rem;">🔎 兩棲辨識挑戰</h2>
+            <p style="font-size: 0.95rem; color: #555;">全台物種大搜查，你能認出幾種？</p>
+            <br>
+            <div style="font-size:3.5rem; margin-bottom:15px;">🧐</div>
+            <button class="nav-btn" style="background:var(--primary); color:white; width:100%; padding:15px; font-size:1.1rem;" onclick="startQuiz()">
+                開始挑戰
+            </button>
+        </div>
+
+        <div id="quiz-play" class="quiz-panel" style="display:none;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-weight:bold; color:#78909c; font-size: 0.9rem;">
+                <span id="q-progress">1 / 10</span>
+                <span>分數: <span id="q-score">0</span></span>
+            </div>
+            
+            <h3 style="margin:0; color:#37474f; font-size: 1.2rem;">這是哪一種兩棲類？</h3>
+            <div id="skip-indicator" class="skip-msg">⚠️ 圖片讀取失敗，自動補題</div>
+
+            <div class="q-media-box">
+                <div class="loader" id="v-loader"></div>
+                <img id="q-img" class="full-img">
+            </div>
+
+            <div id="opt-container"></div>
+            <div id="feedback" style="height:25px; font-weight:bold; margin-top:5px; font-size: 1rem;"></div>
+
+            <div id="reveal-card" class="reveal-box">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <strong id="rev-name" style="font-size:1.2rem; color:var(--primary);"></strong>
+                    <span id="rev-status" class="status-badge"></span>
+                </div>
+                <p id="rev-desc" style="font-size:0.9rem; margin-top:8px; color:#455a64; line-height:1.5;"></p>
+                <a id="rev-link" href="#" target="_blank" style="font-size:0.85rem; display:block; margin-top:10px; color:var(--secondary); font-weight:bold;">📖 查看百科</a>
+            </div>
+
+            <button id="next-btn" class="nav-btn" style="width:100%; background:var(--primary); color:white; margin-top:15px; display:none;" onclick="nextQuestion()">下一題 →</button>
+            <button onclick="quitQuiz()" style="background:none; border:none; margin-top:15px; color:#90a4ae; text-decoration:underline; cursor:pointer; font-size: 0.9rem;">退出</button>
+        </div>
+
+        <div id="quiz-result" class="quiz-panel" style="display:none;">
+            <h2>🏆 挑戰完成</h2>
+            <p>本次得分</p>
+            <h1 id="final-score" style="font-size:3.5rem; margin:10px 0; color:var(--primary);">0</h1>
+            <div id="final-rank" style="font-size:1rem; background:var(--accent); color:#37474f; padding:6px 20px; border-radius:20px; display:inline-block; font-weight:bold;"></div>
+            <br><br>
+            <button class="nav-btn" onclick="quitQuiz()">返回主選單</button>
+        </div>
+    </div>
+
+</div>
+
+<div id="modal" class="modal" onclick="closeModal(event)">
+    <div class="modal-box">
+        <div class="img-area">
+            <div class="loader" id="m-loader"></div>
+            <img id="m-img" class="full-img">
+            <div id="m-err" style="display:none; color:white;">無圖片資料</div>
+        </div>
+        <div class="info-area">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <h2 id="m-name" style="margin:0; color:var(--primary); font-size: 1.5rem;"></h2>
+                <span id="m-status" class="status-badge" style="margin:0;"></span>
+            </div>
+            <div id="m-latin" style="color:#78909c; font-style:italic; margin-bottom:10px; margin-top:2px; font-size: 0.9rem;"></div>
+            <p id="m-desc" style="line-height:1.6; color:#455a64; font-size: 0.95rem;">讀取中...</p>
+            
+            <a id="m-wiki" href="#" target="_blank" style="display:block; text-align:center; margin-top:20px; padding:12px; background:#e0f2f1; color:var(--primary); text-decoration:none; border-radius:8px; font-weight:bold;">前往維基百科閱讀更多</a>
+        </div>
+        <button onclick="closeModal(null)" style="width:100%; padding:15px; border:none; background:#eceff1; color:#78909c; cursor:pointer; font-size:1rem; border-top:1px solid #ddd; font-weight: bold;">關閉視窗</button>
+    </div>
+</div>
+
+<script>
+    // --- 台灣兩棲類完整資料庫 (約43種) ---
+    // 包含：蟾蜍、樹蟾、樹蛙、赤蛙、叉舌蛙、狹口蛙、山椒魚、外來種
+    const amphibians = [
+        // --- 蟾蜍科 (Bufonidae) ---
+        { name: "盤古蟾蜍", eng: "Bufo bankorensis", cat: "蟾蜍", status: "特有種/常見" },
+        { name: "黑眶蟾蜍", eng: "Duttaphrynus melanostictus", cat: "蟾蜍", status: "常見/有毒" },
+
+        // --- 樹蟾科 (Hylidae) ---
+        { name: "中國樹蟾", eng: "Hyla chinensis", cat: "樹蟾", status: "原生/雨怪" },
+
+        // --- 樹蛙科 (Rhacophoridae) ---
+        { name: "臺北樹蛙", eng: "Zhangixalus taipeianus", cat: "樹蛙", status: "特有種/保育/冬季", wikiTerm: "台北樹蛙" },
+        { name: "翡翠樹蛙", eng: "Zhangixalus prasinatus", cat: "樹蛙", status: "特有種/保育" },
+        { name: "莫氏樹蛙", eng: "Zhangixalus moltrechti", cat: "樹蛙", status: "特有種/常見/紅眼" },
+        { name: "諸羅樹蛙", eng: "Zhangixalus arvalis", cat: "樹蛙", status: "特有種/保育/竹林" },
+        { name: "橙腹樹蛙", eng: "Zhangixalus aurantiventris", cat: "樹蛙", status: "特有種/保育/稀有" },
+        { name: "褐樹蛙", eng: "Buergeria robusta", cat: "樹蛙", status: "特有種/常見/溪流" },
+        { name: "太田樹蛙", eng: "Buergeria otai", cat: "樹蛙", status: "原生/溪流/叫聲" },
+        { name: "艾氏樹蛙", eng: "Kurixalus eiffingeri", cat: "樹蛙", status: "原生/竹筒/護卵" },
+        { name: "面天樹蛙", eng: "Kurixalus idiootocus", cat: "樹蛙", status: "特有種/小型/逼逼" },
+        { name: "碧眼樹蛙", eng: "Kurixalus berylliniris", cat: "樹蛙", status: "特有種/綠眼" },
+        { name: "王氏樹蛙", eng: "Kurixalus wangi", cat: "樹蛙", status: "特有種/屏東" },
+        { name: "布氏樹蛙", eng: "Polypedates braueri", cat: "樹蛙", status: "原生/白頷/常見", wikiTerm: "布氏樹蛙" },
+
+        // --- 赤蛙科 (Ranidae) ---
+        { name: "斯文豪氏赤蛙", eng: "Odorrana swinhoana", cat: "赤蛙", status: "特有種/叫聲鳥鳴" },
+        { name: "梭德氏赤蛙", eng: "Rana sauteri", cat: "赤蛙", status: "特有種/急流" },
+        { name: "長腳赤蛙", eng: "Rana longicrus", cat: "赤蛙", status: "原生/紅大腿/冬季" },
+        { name: "金線蛙", eng: "Pelophylax fukienensis", cat: "赤蛙", status: "保育/綠色/水草", wikiTerm: "福建側褶蛙" },
+        { name: "拉都希氏赤蛙", eng: "Hylarana latouchii", cat: "赤蛙", status: "常見/闊褶蛙/拉肚子" },
+        { name: "貢德氏赤蛙", eng: "Hylarana guentheri", cat: "赤蛙", status: "常見/狗叫聲" },
+        { name: "臺北赤蛙", eng: "Hylarana taipehensis", cat: "赤蛙", status: "保育/稀有/單黃線", wikiTerm: "台北赤蛙" },
+        { name: "腹斑蛙", eng: "Babina adenopleura", cat: "赤蛙", status: "常見/給給給" },
+        { name: "豎琴蛙", eng: "Nidirana okinavana", cat: "赤蛙", status: "保育/稀有/登登登" },
+
+        // --- 叉舌蛙科 (Dicroglossidae) ---
+        { name: "澤蛙", eng: "Fejervarya kawamurai", cat: "赤蛙", status: "常見/田蛙/脊線", wikiTerm: "澤蛙" },
+        { name: "海蛙", eng: "Fejervarya cancrivora", cat: "赤蛙", status: "稀有/耐鹽/紅樹林" },
+        { name: "虎皮蛙", eng: "Hoplobatrachus rugulosus", cat: "赤蛙", status: "保育/水雞/大嗓門" },
+        { name: "福建大頭蛙", eng: "Limnonectes fujianensis", cat: "赤蛙", status: "常見/古氏赤蛙/水溝" },
+
+        // --- 狹口蛙科 (Microhylidae) ---
+        { name: "小雨蛙", eng: "Microhyla fissipes", cat: "狹口蛙", status: "常見/幾何紋/大聲" },
+        { name: "黑蒙西氏小雨蛙", eng: "Microhyla heymonsi", cat: "狹口蛙", status: "原生/黑背線" },
+        { name: "巴氏小雨蛙", eng: "Microhyla butleri", cat: "狹口蛙", status: "原生/稀有" },
+        { name: "史丹吉氏小雨蛙", eng: "Micryletta steinegeri", cat: "狹口蛙", status: "特有種/落葉堆" },
+        { name: "亞洲錦蛙", eng: "Kaloula pulchra", cat: "外來種", status: "外來種/花狹口蛙" },
+
+        // --- 山椒魚科 (Hynobiidae) ---
+        { name: "阿里山山椒魚", eng: "Hynobius arisanensis", cat: "山椒魚", status: "特有種/保育/高山" },
+        { name: "臺灣山椒魚", eng: "Hynobius formosanus", cat: "山椒魚", status: "特有種/保育/高山", wikiTerm: "臺灣山椒魚" },
+        { name: "觀霧山椒魚", eng: "Hynobius fucus", cat: "山椒魚", status: "特有種/保育/雪霸" },
+        { name: "南湖山椒魚", eng: "Hynobius glacialis", cat: "山椒魚", status: "特有種/保育/冰河孑遺" },
+        { name: "楚南氏山椒魚", eng: "Hynobius sonani", cat: "山椒魚", status: "特有種/保育/針闊葉林" },
+
+        // --- 其他外來種 (Invasive) ---
+        { name: "斑腿樹蛙", eng: "Polypedates megacephalus", cat: "外來種", status: "外來種/強勢/似布氏" },
+        { name: "美洲牛蛙", eng: "Lithobates catesbeianus", cat: "外來種", status: "外來種/食肉/巨大" },
+        { name: "海蟾蜍", eng: "Rhinella marina", cat: "外來種", status: "外來種/劇毒/世界百大" }
+    ];
+
+    // --- Helper Functions ---
+    function getStatusClass(status) {
+        if (status.includes("外來種")) return "st-invasive";
+        if (status.includes("特有種")) return "st-endemic";
+        if (status.includes("保育")) return "st-conservation";
+        if (status.includes("山椒魚")) return "st-salamander";
+        return "st-common";
+    }
+
+    const getWikiData = async (plantName, wikiTerm = null) => {
+        try {
+            const term = wikiTerm || plantName;
+            // 嘗試獲取中文維基百科資料
+            const res = await fetch(`https://zh.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(term)}`);
+            if(!res.ok) throw new Error();
+            return await res.json();
+        } catch(e) { return null; }
+    };
+
+    // --- Initialization ---
+    document.addEventListener('DOMContentLoaded', () => {
+        renderGuide();
+        document.getElementById('db-count').innerText = amphibians.length;
+        
+        // 每日一植日期
+        const today = new Date();
+        const dateStr = `${today.getFullYear()} / ${today.getMonth()+1} / ${today.getDate()}`;
+        document.getElementById('daily-date-display').innerText = dateStr;
+    });
+
+    // --- Tab Switching ---
+    function setTab(tab, btn) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        
+        document.getElementById(`sec-${tab}`).classList.add('active');
+        btn.classList.add('active');
+        window.scrollTo(0, 0);
+
+        if (tab !== 'quiz') quitQuiz();
+    }
+
+    // --- Guide ---
+    let currentFilter = 'all';
+    function renderGuide() {
+        const grid = document.getElementById('guide-grid');
+        grid.innerHTML = '';
+        const term = document.getElementById('search-input').value.toLowerCase();
+        
+        const list = amphibians.filter(p => {
+            let matchCat = false;
+            if(currentFilter === 'all') matchCat = true;
+            else if(currentFilter === '赤蛙') matchCat = p.cat === '赤蛙' || p.cat === '叉舌蛙'; // 合併顯示
+            else if(currentFilter === '保育') matchCat = p.status.includes('保育');
+            else if(currentFilter === '特有種') matchCat = p.status.includes('特有種');
+            else if(currentFilter === '外來種') matchCat = p.status.includes('外來種') || p.cat === '外來種';
+            else matchCat = p.cat.includes(currentFilter);
+            
+            const matchSearch = p.name.includes(term) || p.eng.toLowerCase().includes(term);
+            return matchCat && matchSearch;
+        });
+
+        list.forEach(p => {
+            const el = document.createElement('div');
+            el.className = 'plant-card';
+            el.innerHTML = `
+                <div class="p-name">${p.name}</div>
+                <div class="p-cat">${p.eng.split(' ')[0]}...</div>
+                <div class="status-badge ${getStatusClass(p.status)}">${p.status}</div>
+            `;
+            el.onclick = () => openModal(p);
+            grid.appendChild(el);
+        });
+    }
+
+    function setFilter(cat, btn) {
+        currentFilter = cat;
+        document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        renderGuide();
+    }
+
+    // --- Daily Card Logic ---
+    let isDailyFlipped = false;
+    let currentDailyPlant = null;
+
+    function flipDailyCard() {
+        if (isDailyFlipped) return;
+        
+        const cardInner = document.getElementById('daily-card-inner');
+        cardInner.classList.add('is-flipped');
+        isDailyFlipped = true;
+        
+        loadDailyPlantData();
+    }
+    
+    function openDailyZoom() {
+        if (!currentDailyPlant) return;
+        openModal(currentDailyPlant);
+    }
+
+    async function loadDailyPlantData() {
+        const todayStr = new Date().toDateString();
+        let hash = 0;
+        for (let i = 0; i < todayStr.length; i++) hash = todayStr.charCodeAt(i) + ((hash << 5) - hash);
+        const seed = Math.abs(hash); 
+        const index = seed % amphibians.length;
+        const plant = amphibians[index];
+        currentDailyPlant = plant;
+
+        document.getElementById('daily-name').innerText = plant.name;
+        document.getElementById('daily-eng').innerText = plant.eng;
+        
+        const badge = document.getElementById('daily-status');
+        badge.innerText = plant.status;
+        badge.className = `status-badge ${getStatusClass(plant.status)}`;
+
+        const data = await getWikiData(plant.name, plant.wikiTerm);
+        const img = document.getElementById('daily-img');
+        const loader = document.getElementById('daily-loader');
+        const desc = document.getElementById('daily-desc');
+
+        if(data) {
+            desc.innerText = data.extract ? (data.extract.substring(0, 100) + "...") : "暫無詳細介紹。";
+            const src = data.originalimage ? data.originalimage.source : (data.thumbnail ? data.thumbnail.source : null);
+            if(src) {
+                img.src = src;
+                img.onload = () => { loader.style.display = 'none'; };
+            } else {
+                loader.style.display = 'none';
+                img.alt = "No Image";
+            }
+        } else {
+            loader.style.display = 'none';
+            desc.innerText = "資料讀取失敗，請檢查網路連線。";
+        }
+    }
+
+
+    // --- Modal ---
+    async function openModal(plant) {
+        const modal = document.getElementById('modal');
+        const img = document.getElementById('m-img');
+        const loader = document.getElementById('m-loader');
+        
+        modal.style.display = 'flex';
+        img.style.display = 'none';
+        loader.style.display = 'block';
+        document.getElementById('m-err').style.display = 'none';
+        document.getElementById('m-name').innerText = plant.name;
+        document.getElementById('m-latin').innerText = plant.eng;
+        document.getElementById('m-desc').innerText = "連線百科中...";
+        document.getElementById('m-wiki').href = `https://zh.wikipedia.org/wiki/${plant.wikiTerm || plant.name}`;
+        
+        const badge = document.getElementById('m-status');
+        badge.innerText = plant.status;
+        badge.className = `status-badge ${getStatusClass(plant.status)}`;
+
+        const data = await getWikiData(plant.name, plant.wikiTerm);
+        if(data) {
+            document.getElementById('m-desc').innerText = data.extract || "無詳細摘要";
+            const src = data.originalimage ? data.originalimage.source : (data.thumbnail ? data.thumbnail.source : null);
+            if(src) {
+                img.src = src;
+                img.onload = () => { loader.style.display='none'; img.style.display='block'; };
+            } else {
+                loader.style.display='none';
+                document.getElementById('m-err').style.display='block';
+            }
+        } else {
+            loader.style.display='none';
+            document.getElementById('m-desc').innerText = "資料讀取失敗。";
+        }
+    }
+
+    function closeModal(e) {
+        if(!e || e.target.id === 'modal') {
+            document.getElementById('modal').style.display = 'none';
+        }
+    }
+
+    // --- Quiz ---
+    let gameState = { pool: [], queue: [], idx: 0, score: 0, answering: false };
+    let retryCount = 0;
+
+    function startQuiz() {
+        let pool = [...amphibians].sort(() => Math.random() - 0.5);
+        gameState = { pool: pool, queue: pool.slice(0, 10), idx: 0, score: 0, answering: false };
+        retryCount = 0;
+        document.getElementById('quiz-menu').style.display = 'none';
+        document.getElementById('quiz-result').style.display = 'none';
+        document.getElementById('quiz-play').style.display = 'block';
+        document.getElementById('q-score').innerText = 0;
+        loadQuestion();
+    }
+
+    async function loadQuestion() {
+        if(gameState.idx >= 10) { finishQuiz(); return; }
+        
+        const plant = gameState.queue[gameState.idx];
+        gameState.answering = true;
+
+        document.getElementById('q-progress').innerText = `${gameState.idx+1} / 10`;
+        document.getElementById('reveal-card').style.display = 'none';
+        document.getElementById('next-btn').style.display = 'none';
+        document.getElementById('feedback').innerText = '';
+        document.getElementById('skip-indicator').style.display = 'none';
+        document.getElementById('q-img').style.display = 'none';
+        document.getElementById('v-loader').style.display = 'block';
+
+        const data = await getWikiData(plant.name, plant.wikiTerm);
+        const src = data && (data.originalimage ? data.originalimage.source : (data.thumbnail ? data.thumbnail.source : null));
+        if(!src) {
+            handleSkip();
+            return;
+        }
+
+        const img = document.getElementById('q-img');
+        img.src = src;
+        img.onload = () => {
+            document.getElementById('v-loader').style.display = 'none';
+            img.style.display = 'block';
+            retryCount = 0;
+        };
+        img.onerror = () => { handleSkip(); }
+
+        let opts = [plant];
+        let pool = amphibians.filter(p => p.name !== plant.name);
+        for(let i=0; i<3; i++) opts.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0]);
+        opts.sort(() => Math.random() - 0.5);
+        document.getElementById('opt-container').innerHTML = opts.map(p => 
+            `<button class="opt-btn" onclick="checkAnswer(this, '${p.name}')">${p.name}</button>`
+        ).join('');
+    }
+
+    function handleSkip() {
+        retryCount++;
+        if(retryCount > 10) {
+            alert("網路狀況不佳，圖片讀取困難");
+            quitQuiz();
+            return;
+        }
+        let replacementIndex = 10 + retryCount;
+        if(replacementIndex < gameState.pool.length) {
+            gameState.queue[gameState.idx] = gameState.pool[replacementIndex];
+            document.getElementById('skip-indicator').style.display = 'block';
+            loadQuestion();
+        } else {
+            finishQuiz();
+        }
+    }
+
+    function checkAnswer(btn, name) {
+        if(!gameState.answering) return;
+        gameState.answering = false;
+        
+        const correct = gameState.queue[gameState.idx];
+        const isRight = name === correct.name;
+        if(isRight) {
+            btn.classList.add('correct');
+            document.getElementById('feedback').innerText = "⭕ 答對了！";
+            document.getElementById('feedback').style.color = "green";
+            gameState.score += 10;
+        } else {
+            btn.classList.add('wrong');
+            document.getElementById('feedback').innerText = `❌ 是：${correct.name}`;
+            document.getElementById('feedback').style.color = "red";
+            document.querySelectorAll('.opt-btn').forEach(b => {
+                if(b.innerText === correct.name) b.classList.add('correct');
+            });
+        }
+        document.getElementById('q-score').innerText = gameState.score;
+        document.getElementById('next-btn').style.display = 'block';
+
+        const rev = document.getElementById('reveal-card');
+        rev.style.display = 'block';
+        document.getElementById('rev-name').innerText = correct.name;
+        document.getElementById('rev-link').href = `https://zh.wikipedia.org/wiki/${correct.wikiTerm || correct.name}`;
+        
+        const badge = document.getElementById('rev-status');
+        badge.innerText = correct.status;
+        badge.className = `status-badge ${getStatusClass(correct.status)}`;
+
+        getWikiData(correct.name, correct.wikiTerm).then(d => document.getElementById('rev-desc').innerText = d ? d.extract : "無資料");
+    }
+
+    function nextQuestion() {
+        gameState.idx++;
+        loadQuestion();
+    }
+
+    function finishQuiz() {
+        document.getElementById('quiz-play').style.display = 'none';
+        document.getElementById('quiz-result').style.display = 'block';
+        document.getElementById('final-score').innerText = gameState.score;
+        
+        let rank = "";
+        if(gameState.score === 100) rank = "👑 兩棲類霸主";
+        else if(gameState.score >= 80) rank = "🐸 青蛙達人";
+        else if(gameState.score >= 60) rank = "🔎 濕地觀察家";
+        else rank = "🥚 蝌蚪級新手";
+        document.getElementById('final-rank').innerText = rank;
+    }
+
+    function quitQuiz() {
+        document.getElementById('quiz-play').style.display = 'none';
+        document.getElementById('quiz-result').style.display = 'none';
+        document.getElementById('quiz-menu').style.display = 'block';
+    }
+</script>
+
+</body>
+</html>
