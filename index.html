@@ -6,20 +6,17 @@
     <title>台灣兩棲類全圖鑑 (完整版)</title>
     <style>
         :root {
-            /* 兩棲類主題色：潮濕的森林綠與水藍 */
-            --primary: #00695c;   /* 深青綠 */
-            --secondary: #26a69a; /* 淺青綠 */
-            --accent: #ffb74d;    /* 蛙眼黃橘 */
-            --bg: #e0f2f1;        /* 極淺青背景 */
+            --primary: #00695c;
+            --secondary: #26a69a;
+            --accent: #ffb74d;
+            --bg: #e0f2f1;
             --text: #263238;
             --card-bg: #ffffff;
-            
-            /* 狀態標籤顏色 */
-            --status-common: #558b2f;  /* 常見：草綠 */
-            --status-endemic: #7b1fa2; /* 特有種：紫 */
-            --status-conservation: #c62828; /* 保育類：紅 */
-            --status-invasive: #424242; /* 外來種：深灰 */
-            --status-salamander: #795548; /* 山椒魚：褐 */
+            --status-common: #558b2f;
+            --status-endemic: #7b1fa2;
+            --status-conservation: #c62828;
+            --status-invasive: #424242;
+            --status-salamander: #795548;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -28,274 +25,141 @@
             font-family: "Noto Sans TC", "Microsoft JhengHei", -apple-system, BlinkMacSystemFont, sans-serif;
             background-color: var(--bg);
             color: var(--text);
-            margin: 0;
-            padding: 0;
-            padding-bottom: 80px;
+            margin: 0; padding: 0; padding-bottom: 80px;
             overflow-x: hidden;
         }
 
-        /* --- Header --- */
         header {
             background: linear-gradient(135deg, #004d40, #00796b);
-            color: white;
-            padding: 1.2rem 1rem;
-            text-align: center;
+            color: white; padding: 1.2rem 1rem; text-align: center;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            position: sticky; top: 0;
-            z-index: 100;
+            position: sticky; top: 0; z-index: 100;
         }
         h1 { margin: 0; font-size: 1.5rem; letter-spacing: 1.5px; }
         .subtitle { font-size: 0.8rem; opacity: 0.9; margin-top: 5px; }
 
         /* --- Navigation --- */
         .nav {
-            display: flex;
-            justify-content: flex-start;
-            gap: 10px; 
-            padding: 10px 15px;
-            background: white; 
+            display: flex; justify-content: flex-start; gap: 10px; 
+            padding: 10px 15px; background: white; 
             border-bottom: 1px solid #b2dfdb;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            position: sticky;
-            top: 78px; z-index: 90;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
+            position: sticky; top: 78px; z-index: 90;
+            overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
         }
         .nav::-webkit-scrollbar { display: none; }
         
         .nav-btn {
-            padding: 8px 18px;
-            border: none; border-radius: 50px;
+            padding: 8px 16px; border: none; border-radius: 50px;
             background: #eceff1; color: #546e7a; cursor: pointer;
             font-weight: bold; transition: all 0.2s; 
-            font-size: 0.9rem; white-space: nowrap;
-            flex-shrink: 0;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            font-size: 0.9rem; white-space: nowrap; flex-shrink: 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 5px;
         }
-        .nav-btn.active {
-            background: var(--primary);
-            color: white;
-            box-shadow: 0 2px 5px rgba(0, 105, 92, 0.4);
-        }
+        .nav-btn.active { background: var(--primary); color: white; box-shadow: 0 2px 5px rgba(0, 105, 92, 0.4); }
 
-        .container { 
-            max-width: 1000px;
-            margin: 0 auto; padding: 15px; 
-            min-height: 80vh;
-        }
+        .container { max-width: 1000px; margin: 0 auto; padding: 15px; min-height: 80vh; }
         .section { display: none; animation: fadeIn 0.3s ease-out; }
         .section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
         /* --- Daily Card --- */
         .daily-container { width: 100%; max-width: 480px; margin: 0 auto; text-align: center; }
-        
-        .card-scene {
-            perspective: 1000px;
-            width: 100%; 
-            height: min(580px, 65vh);
-            margin: 20px auto; 
-            position: relative;
-        }
+        .card-scene { perspective: 1000px; width: 100%; height: min(580px, 65vh); margin: 20px auto; position: relative; }
         .card-inner {
-            position: relative;
-            width: 100%; height: 100%; text-align: center;
+            position: relative; width: 100%; height: 100%; text-align: center;
             transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
             transform-style: preserve-3d;
         }
         .card-inner.is-flipped { transform: rotateY(180deg); }
-        
         .card-face {
-            position: absolute;
-            width: 100%; height: 100%;
-            backface-visibility: hidden; 
-            -webkit-backface-visibility: hidden;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            position: absolute; width: 100%; height: 100%;
+            backface-visibility: hidden; -webkit-backface-visibility: hidden;
+            border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            overflow: hidden;
-            background: white;
+            overflow: hidden; background: white;
         }
+        .card-front { background: linear-gradient(135deg, #26a69a, #4db6ac); color: white; border: 4px solid #e0f2f1; z-index: 2; cursor: pointer; }
+        .card-back { transform: rotateY(180deg); padding: 0; justify-content: flex-start; border: 1px solid #ddd; background: #fdfdfd; z-index: 1; }
         
-        .card-front {
-            background: linear-gradient(135deg, #26a69a, #4db6ac);
-            color: white; border: 4px solid #e0f2f1;
-            z-index: 2;
-            cursor: pointer;
-        }
-        .card-back {
-            transform: rotateY(180deg);
-            padding: 0; justify-content: flex-start;
-            border: 1px solid #ddd;
-            background: #fdfdfd;
-            z-index: 1;
-        }
-        
-        .daily-img-wrapper { 
-            width: 100%;
-            height: 55%; 
-            background: #212121; 
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: zoom-in;
-        }
-        .daily-img { 
-            width: 100%;
-            height: 100%; 
-            object-fit: contain; 
-            display: block;
-        }
-        .zoom-hint {
-            position: absolute;
-            bottom: 10px; right: 10px;
-            background: rgba(0,0,0,0.6);
-            color: white; padding: 6px 10px;
-            border-radius: 20px; font-size: 0.75rem;
-            pointer-events: none;
-            display: flex; align-items: center; gap: 5px;
-        }
-
-        .daily-info-box { 
-            padding: 20px;
-            text-align: left; height: 45%; 
-            overflow-y: auto; box-sizing: border-box; 
-            -webkit-overflow-scrolling: touch;
-        }
-        .daily-date { 
-            background: rgba(0,0,0,0.2);
-            padding: 5px 15px; border-radius: 20px; 
-            margin-bottom: 20px; font-size: 0.9rem; letter-spacing: 1px;
-        }
+        .daily-img-wrapper { width: 100%; height: 55%; background: #212121; position: relative; display: flex; align-items: center; justify-content: center; cursor: zoom-in; }
+        .daily-img { width: 100%; height: 100%; object-fit: contain; display: block; }
+        .zoom-hint { position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.6); color: white; padding: 6px 10px; border-radius: 20px; font-size: 0.75rem; pointer-events: none; }
+        .daily-info-box { padding: 20px; text-align: left; height: 45%; overflow-y: auto; box-sizing: border-box; }
+        .daily-date { background: rgba(0,0,0,0.2); padding: 5px 15px; border-radius: 20px; margin-bottom: 20px; font-size: 0.9rem; letter-spacing: 1px; }
 
         /* --- Tools & Grid --- */
-        .tools-bar {
-            background: white;
-            padding: 15px; border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px;
-            border: 1px solid #b2dfdb;
-        }
-        .search-box {
-            width: 100%;
-            padding: 10px; border: 2px solid #80cbc4;
-            border-radius: 8px; font-size: 1rem; box-sizing: border-box; margin-bottom: 12px;
-            -webkit-appearance: none;
-        }
-        .filter-scroll { 
-            display: flex;
-            gap: 8px; overflow-x: auto; padding-bottom: 5px; 
-            scrollbar-width: none; -webkit-overflow-scrolling: touch;
-        }
-        .filter-tag {
-            white-space: nowrap;
-            padding: 6px 14px; border-radius: 15px;
-            background: #e0f2f1; border: 1px solid #4db6ac; cursor: pointer; 
-            font-size: 0.85rem; color: #00695c; flex-shrink: 0;
-        }
+        .tools-bar { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #b2dfdb; }
+        .search-box { width: 100%; padding: 10px; border: 2px solid #80cbc4; border-radius: 8px; font-size: 1rem; box-sizing: border-box; margin-bottom: 12px; }
+        .filter-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
+        .filter-tag { white-space: nowrap; padding: 6px 14px; border-radius: 15px; background: #e0f2f1; border: 1px solid #4db6ac; cursor: pointer; font-size: 0.85rem; color: #00695c; flex-shrink: 0; }
         .filter-tag.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-        .plant-grid { 
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 15px; 
-        }
+        .plant-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
         .plant-card {
-            background: var(--card-bg);
-            border-radius: 12px; padding: 15px 10px; text-align: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05); cursor: pointer; 
-            border: 1px solid #f1f1f1;
-            display: flex;
-            flex-direction: column; justify-content: center; min-height: 110px;
-            position: relative;
-        }
-        @media (hover: hover) {
-            .plant-card:hover { transform: translateY(-5px);
-            border-color: var(--secondary); box-shadow: 0 10px 15px -5px rgba(0,0,0,0.1); transition: 0.2s;
-            }
+            background: var(--card-bg); border-radius: 12px; padding: 15px 10px; text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); cursor: pointer; border: 1px solid #f1f1f1;
+            display: flex; flex-direction: column; justify-content: center; min-height: 110px; position: relative;
         }
         .plant-card:active { transform: scale(0.98); background: #f9f9f9; }
-
         .p-name { font-weight: bold; font-size: 1rem; color: #004d40; margin-bottom: 5px; }
         .p-cat { font-size: 0.75rem; color: #00796b; margin-bottom: 8px; }
-        
-        .status-badge {
-            font-size: 0.7rem;
-            color: white; padding: 3px 8px; border-radius: 10px;
-            display: inline-block; font-weight: bold; margin-top: auto;
-        }
+        .status-badge { font-size: 0.7rem; color: white; padding: 3px 8px; border-radius: 10px; display: inline-block; font-weight: bold; margin-top: auto; }
         .st-endemic { background: var(--status-endemic); }
         .st-common { background: var(--status-common); }
         .st-conservation { background: var(--status-conservation); }
         .st-invasive { background: var(--status-invasive); }
         .st-salamander { background: var(--status-salamander); }
+        .has-sound-icon { position: absolute; top: 5px; right: 5px; font-size: 0.8rem; opacity: 0.6; }
 
-        /* --- Quiz --- */
-        .quiz-panel {
-            background: white;
-            padding: 25px 20px; border-radius: 16px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: center;
-            max-width: 600px; margin: 0 auto;
-            border: 1px solid #eee;
-        }
-        .q-media-box {
-            height: 280px;
-            background: #fafafa; border: 2px dashed #80cbc4;
-            border-radius: 12px; margin: 20px 0; display: flex;
-            align-items: center; justify-content: center; position: relative;
-            overflow: hidden;
-        }
+        /* --- Quiz Common --- */
+        .quiz-panel { background: white; padding: 25px 20px; border-radius: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: center; max-width: 600px; margin: 0 auto; border: 1px solid #eee; }
+        .q-media-box { height: 280px; background: #fafafa; border: 2px dashed #80cbc4; border-radius: 12px; margin: 20px 0; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
         .full-img { max-width: 100%; max-height: 100%; object-fit: contain; display: none; }
-        
-        .opt-btn {
-            width: 100%;
-            padding: 14px; margin-bottom: 10px; background: white;
-            border: 2px solid #b2dfdb; border-radius: 10px; font-size: 0.95rem;
-            cursor: pointer; font-weight: bold; color: #00695c;
-            touch-action: manipulation;
-        }
+        .opt-btn { width: 100%; padding: 14px; margin-bottom: 10px; background: white; border: 2px solid #b2dfdb; border-radius: 10px; font-size: 0.95rem; cursor: pointer; font-weight: bold; color: #00695c; touch-action: manipulation; }
         .opt-btn:active { background: #e0f2f1; }
         .opt-btn.correct { background: #b2dfdb; border-color: #26a69a; color: #004d40; }
         .opt-btn.wrong { background: #ffcdd2; border-color: #ef5350; color: #b71c1c; }
+        
+        /* --- Sound Quiz Specific --- */
+        .sound-player-large {
+            width: 100%; height: 100%; display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; cursor: pointer;
+            background: linear-gradient(to bottom, #f1f8e9, #dcedc8);
+            transition: 0.2s;
+        }
+        .sound-player-large:active { background: #c5e1a5; }
+        .sp-icon { font-size: 5rem; color: var(--primary); margin-bottom: 10px; }
+        .sp-text { font-weight: bold; color: #558b2f; }
+        .playing-wave {
+            display: flex; gap: 5px; height: 30px; align-items: flex-end; margin-top: 10px; opacity: 0;
+        }
+        .playing-wave.active { opacity: 1; }
+        .wave-bar { width: 6px; background: var(--secondary); animation: wave 1s infinite ease-in-out; border-radius: 3px; }
+        .wave-bar:nth-child(1) { animation-delay: 0s; height: 15px; }
+        .wave-bar:nth-child(2) { animation-delay: 0.1s; height: 25px; }
+        .wave-bar:nth-child(3) { animation-delay: 0.2s; height: 10px; }
+        .wave-bar:nth-child(4) { animation-delay: 0.3s; height: 20px; }
+        .wave-bar:nth-child(5) { animation-delay: 0.4s; height: 12px; }
+        @keyframes wave { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(1.5); } }
 
         /* --- Modal --- */
-        .modal {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); z-index: 2000;
-            display: none; justify-content: center; align-items: center; padding: 15px;
-            backdrop-filter: blur(5px);
-            touch-action: none;
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; display: none; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(5px); }
+        .modal-box { background: white; width: 100%; max-width: 500px; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; max-height: 85vh; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3); animation: popUp 0.3s; }
+        .img-area { height: 40vh; background: #000; display: flex; align-items: center; justify-content: center; position: relative; }
+        .info-area { padding: 20px; overflow-y: auto; -webkit-overflow-scrolling: touch; flex: 1; }
+        .audio-btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            width: 100%; padding: 12px; margin-top: 10px; margin-bottom: 15px;
+            background: #fff3e0; border: 1px solid #ffb74d; color: #ef6c00;
+            border-radius: 8px; cursor: pointer; font-weight: bold;
         }
-        .modal-box {
-            background: white;
-            width: 100%; max-width: 500px;
-            border-radius: 16px; overflow: hidden; display: flex; flex-direction: column;
-            max-height: 85vh;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
-            animation: popUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        @keyframes popUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .audio-btn.disabled { opacity: 0.5; cursor: not-allowed; background: #eee; border-color: #ddd; color: #999; }
         
-        .img-area { 
-            height: 40vh;
-            background: #000; display: flex; align-items: center; justify-content: center; 
-        }
-        .info-area { padding: 20px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-        
-        .loader {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid var(--primary);
-            border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite;
-        }
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--primary); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        .reveal-box {
-            background: #e0f2f1;
-            border: 1px solid #b2dfdb; border-radius: 12px;
-            padding: 15px; text-align: left; margin-top: 15px; display: none;
-        }
+        .reveal-box { background: #e0f2f1; border: 1px solid #b2dfdb; border-radius: 12px; padding: 15px; text-align: left; margin-top: 15px; display: none; }
 
         @media (min-width: 768px) {
             .container { padding: 30px; }
@@ -305,20 +169,20 @@
             h1 { font-size: 2rem; }
             .img-area { height: 300px; }
         }
-
     </style>
 </head>
 <body>
 
 <header>
     <h1>🐸 台灣兩棲類全圖鑑</h1>
-    <div class="subtitle">完整收錄台灣 43 種蛙類與山椒魚</div>
+    <div class="subtitle">收錄 43 種蛙類生態與鳴叫聲</div>
 </header>
 
 <div class="nav">
     <button class="nav-btn active" onclick="setTab('daily', this)">🔮 每日一蛙</button>
     <button class="nav-btn" onclick="setTab('guide', this)">📖 生態圖鑑</button>
-    <button class="nav-btn" onclick="setTab('quiz', this)">🌲 蛙蛙大會考</button>
+    <button class="nav-btn" onclick="setTab('sound', this)">🎵 聽音辨位</button>
+    <button class="nav-btn" onclick="setTab('quiz', this)">🌲 視覺會考</button>
 </div>
 
 <div class="container">
@@ -350,9 +214,7 @@
                             </div>
                             <p id="daily-eng" style="color:#78909c; font-style:italic; font-size:0.85rem; margin-top:2px;"></p>
                             <hr style="border:0; border-top:1px solid #eee; margin:10px 0;">
-                            <p id="daily-desc" style="line-height:1.6; color:#546e7a; font-size:0.9rem;">
-                                連線中...
-                            </p>
+                            <p id="daily-desc" style="line-height:1.6; color:#546e7a; font-size:0.9rem;">連線中...</p>
                         </div>
                     </div>
                 </div>
@@ -382,14 +244,72 @@
         <div id="guide-grid" class="plant-grid"></div>
     </div>
 
+    <div id="sec-sound" class="section">
+        <div id="sound-menu" class="quiz-panel">
+            <h2 style="color:var(--primary); font-size: 1.4rem;">🎵 聽音辨位大挑戰</h2>
+            <p style="font-size: 0.95rem; color: #555;">閉上眼睛，聆聽大自然的交響樂</p>
+            <br>
+            <div style="font-size:3.5rem; margin-bottom:15px;">👂</div>
+            <button class="nav-btn" style="background:var(--accent); color:#37474f; width:100%; padding:15px; font-size:1.1rem;" onclick="startSoundQuiz()">
+                開始聽力測驗
+            </button>
+        </div>
+
+        <div id="sound-play" class="quiz-panel" style="display:none;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-weight:bold; color:#78909c; font-size: 0.9rem;">
+                <span id="s-progress">1 / 5</span>
+                <span>分數: <span id="s-score">0</span></span>
+            </div>
+            
+            <h3 style="margin:0; color:#37474f; font-size: 1.2rem;">這是誰的叫聲？</h3>
+
+            <div class="q-media-box" style="border-style: solid; border-color: #a5d6a7;">
+                <div class="sound-player-large" onclick="playQuizSound()">
+                    <div class="sp-icon">▶️</div>
+                    <div class="sp-text">點擊播放聲音</div>
+                    <div id="wave-anim" class="playing-wave">
+                        <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="s-opt-container"></div>
+            <div id="s-feedback" style="height:25px; font-weight:bold; margin-top:5px; font-size: 1rem;"></div>
+
+            <div id="s-reveal-card" class="reveal-box">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <strong id="s-rev-name" style="font-size:1.2rem; color:var(--primary);"></strong>
+                    <span id="s-rev-status" class="status-badge"></span>
+                </div>
+                <div style="text-align:center; min-height:100px; display:flex; align-items:center; justify-content:center;">
+                     <img id="s-rev-img" style="width:100%; max-height:200px; object-fit:contain; margin-top:10px; display:none; border-radius:8px;">
+                     <div id="s-rev-loader" class="loader" style="display:none; margin: 20px auto;"></div>
+                </div>
+                <p id="s-rev-desc" style="font-size:0.9rem; margin-top:8px; color:#455a64; line-height:1.5;"></p>
+            </div>
+
+            <button id="s-next-btn" class="nav-btn" style="width:100%; background:var(--primary); color:white; margin-top:15px; display:none;" onclick="nextSoundQuestion()">下一題 →</button>
+            <button onclick="quitSoundQuiz()" style="background:none; border:none; margin-top:15px; color:#90a4ae; text-decoration:underline; cursor:pointer; font-size: 0.9rem;">退出</button>
+        </div>
+
+        <div id="sound-result" class="quiz-panel" style="display:none;">
+            <h2>🎵 測驗結束</h2>
+            <p>聽力得分</p>
+            <h1 id="s-final-score" style="font-size:3.5rem; margin:10px 0; color:var(--primary);">0</h1>
+            <p id="s-final-comment" style="color:#666; font-size:0.9rem;"></p>
+            <br>
+            <button class="nav-btn" onclick="quitSoundQuiz()">返回主選單</button>
+        </div>
+    </div>
+
     <div id="sec-quiz" class="section">
         <div id="quiz-menu" class="quiz-panel">
-            <h2 style="color:var(--primary); font-size: 1.4rem;">🔎 兩棲辨識挑戰</h2>
-            <p style="font-size: 0.95rem; color: #555;">全台物種大搜查，你能認出幾種？</p>
+            <h2 style="color:var(--primary); font-size: 1.4rem;">🔎 視覺辨識挑戰</h2>
+            <p style="font-size: 0.95rem; color: #555;">全台物種大搜查，看圖猜猜看</p>
             <br>
             <div style="font-size:3.5rem; margin-bottom:15px;">🧐</div>
             <button class="nav-btn" style="background:var(--primary); color:white; width:100%; padding:15px; font-size:1.1rem;" onclick="startQuiz()">
-                開始挑戰
+                開始視覺測驗
             </button>
         </div>
 
@@ -400,7 +320,7 @@
             </div>
             
             <h3 style="margin:0; color:#37474f; font-size: 1.2rem;">這是哪一種兩棲類？</h3>
-            <div id="skip-indicator" class="skip-msg">⚠️ 圖片讀取失敗，自動補題</div>
+            <div id="skip-indicator" class="skip-msg" style="display:none; color:red; font-size:0.8rem;">⚠️ 圖片讀取失敗，自動補題</div>
 
             <div class="q-media-box">
                 <div class="loader" id="v-loader"></div>
@@ -448,6 +368,12 @@
                 <span id="m-status" class="status-badge" style="margin:0;"></span>
             </div>
             <div id="m-latin" style="color:#78909c; font-style:italic; margin-bottom:10px; margin-top:2px; font-size: 0.9rem;"></div>
+            
+            <button id="m-play-btn" class="audio-btn" onclick="playModalSound()">
+                <span>🔊 播放鳴叫聲</span>
+            </button>
+            <audio id="modal-audio" style="display:none;"></audio>
+
             <p id="m-desc" style="line-height:1.6; color:#455a64; font-size: 0.95rem;">讀取中...</p>
             
             <a id="m-wiki" href="#" target="_blank" style="display:block; text-align:center; margin-top:20px; padding:12px; background:#e0f2f1; color:var(--primary); text-decoration:none; border-radius:8px; font-weight:bold;">前往維基百科閱讀更多</a>
@@ -456,69 +382,10 @@
     </div>
 </div>
 
+<script src="frogs.js"></script>
+
 <script>
-    // --- 台灣兩棲類完整資料庫 (約43種) ---
-    // 包含：蟾蜍、樹蟾、樹蛙、赤蛙、叉舌蛙、狹口蛙、山椒魚、外來種
-    const amphibians = [
-        // --- 蟾蜍科 (Bufonidae) ---
-        { name: "盤古蟾蜍", eng: "Bufo bankorensis", cat: "蟾蜍", status: "特有種/常見" },
-        { name: "黑眶蟾蜍", eng: "Duttaphrynus melanostictus", cat: "蟾蜍", status: "常見/有毒" },
-
-        // --- 樹蟾科 (Hylidae) ---
-        { name: "中國樹蟾", eng: "Hyla chinensis", cat: "樹蟾", status: "原生/雨怪" },
-
-        // --- 樹蛙科 (Rhacophoridae) ---
-        { name: "臺北樹蛙", eng: "Zhangixalus taipeianus", cat: "樹蛙", status: "特有種/保育/冬季", wikiTerm: "台北樹蛙" },
-        { name: "翡翠樹蛙", eng: "Zhangixalus prasinatus", cat: "樹蛙", status: "特有種/保育" },
-        { name: "莫氏樹蛙", eng: "Zhangixalus moltrechti", cat: "樹蛙", status: "特有種/常見/紅眼" },
-        { name: "諸羅樹蛙", eng: "Zhangixalus arvalis", cat: "樹蛙", status: "特有種/保育/竹林" },
-        { name: "橙腹樹蛙", eng: "Zhangixalus aurantiventris", cat: "樹蛙", status: "特有種/保育/稀有" },
-        { name: "褐樹蛙", eng: "Buergeria robusta", cat: "樹蛙", status: "特有種/常見/溪流" },
-        { name: "太田樹蛙", eng: "Buergeria otai", cat: "樹蛙", status: "原生/溪流/叫聲" },
-        { name: "艾氏樹蛙", eng: "Kurixalus eiffingeri", cat: "樹蛙", status: "原生/竹筒/護卵" },
-        { name: "面天樹蛙", eng: "Kurixalus idiootocus", cat: "樹蛙", status: "特有種/小型/逼逼" },
-        { name: "碧眼樹蛙", eng: "Kurixalus berylliniris", cat: "樹蛙", status: "特有種/綠眼" },
-        { name: "王氏樹蛙", eng: "Kurixalus wangi", cat: "樹蛙", status: "特有種/屏東" },
-        { name: "布氏樹蛙", eng: "Polypedates braueri", cat: "樹蛙", status: "原生/白頷/常見", wikiTerm: "布氏樹蛙" },
-
-        // --- 赤蛙科 (Ranidae) ---
-        { name: "斯文豪氏赤蛙", eng: "Odorrana swinhoana", cat: "赤蛙", status: "特有種/叫聲鳥鳴" },
-        { name: "梭德氏赤蛙", eng: "Rana sauteri", cat: "赤蛙", status: "特有種/急流" },
-        { name: "長腳赤蛙", eng: "Rana longicrus", cat: "赤蛙", status: "原生/紅大腿/冬季" },
-        { name: "金線蛙", eng: "Pelophylax fukienensis", cat: "赤蛙", status: "保育/綠色/水草", wikiTerm: "福建側褶蛙" },
-        { name: "拉都希氏赤蛙", eng: "Hylarana latouchii", cat: "赤蛙", status: "常見/闊褶蛙/拉肚子" },
-        { name: "貢德氏赤蛙", eng: "Hylarana guentheri", cat: "赤蛙", status: "常見/狗叫聲" },
-        { name: "臺北赤蛙", eng: "Hylarana taipehensis", cat: "赤蛙", status: "保育/稀有/單黃線", wikiTerm: "台北赤蛙" },
-        { name: "腹斑蛙", eng: "Babina adenopleura", cat: "赤蛙", status: "常見/給給給" },
-        { name: "豎琴蛙", eng: "Nidirana okinavana", cat: "赤蛙", status: "保育/稀有/登登登" },
-
-        // --- 叉舌蛙科 (Dicroglossidae) ---
-        { name: "澤蛙", eng: "Fejervarya kawamurai", cat: "赤蛙", status: "常見/田蛙/脊線", wikiTerm: "澤蛙" },
-        { name: "海蛙", eng: "Fejervarya cancrivora", cat: "赤蛙", status: "稀有/耐鹽/紅樹林" },
-        { name: "虎皮蛙", eng: "Hoplobatrachus rugulosus", cat: "赤蛙", status: "保育/水雞/大嗓門" },
-        { name: "福建大頭蛙", eng: "Limnonectes fujianensis", cat: "赤蛙", status: "常見/古氏赤蛙/水溝" },
-
-        // --- 狹口蛙科 (Microhylidae) ---
-        { name: "小雨蛙", eng: "Microhyla fissipes", cat: "狹口蛙", status: "常見/幾何紋/大聲" },
-        { name: "黑蒙西氏小雨蛙", eng: "Microhyla heymonsi", cat: "狹口蛙", status: "原生/黑背線" },
-        { name: "巴氏小雨蛙", eng: "Microhyla butleri", cat: "狹口蛙", status: "原生/稀有" },
-        { name: "史丹吉氏小雨蛙", eng: "Micryletta steinegeri", cat: "狹口蛙", status: "特有種/落葉堆" },
-        { name: "亞洲錦蛙", eng: "Kaloula pulchra", cat: "外來種", status: "外來種/花狹口蛙" },
-
-        // --- 山椒魚科 (Hynobiidae) ---
-        { name: "阿里山山椒魚", eng: "Hynobius arisanensis", cat: "山椒魚", status: "特有種/保育/高山" },
-        { name: "臺灣山椒魚", eng: "Hynobius formosanus", cat: "山椒魚", status: "特有種/保育/高山", wikiTerm: "臺灣山椒魚" },
-        { name: "觀霧山椒魚", eng: "Hynobius fucus", cat: "山椒魚", status: "特有種/保育/雪霸" },
-        { name: "南湖山椒魚", eng: "Hynobius glacialis", cat: "山椒魚", status: "特有種/保育/冰河孑遺" },
-        { name: "楚南氏山椒魚", eng: "Hynobius sonani", cat: "山椒魚", status: "特有種/保育/針闊葉林" },
-
-        // --- 其他外來種 (Invasive) ---
-        { name: "斑腿樹蛙", eng: "Polypedates megacephalus", cat: "外來種", status: "外來種/強勢/似布氏" },
-        { name: "美洲牛蛙", eng: "Lithobates catesbeianus", cat: "外來種", status: "外來種/食肉/巨大" },
-        { name: "海蟾蜍", eng: "Rhinella marina", cat: "外來種", status: "外來種/劇毒/世界百大" }
-    ];
-
-    // --- Helper Functions ---
+    // --- Global Helpers ---
     function getStatusClass(status) {
         if (status.includes("外來種")) return "st-invasive";
         if (status.includes("特有種")) return "st-endemic";
@@ -530,19 +397,24 @@
     const getWikiData = async (plantName, wikiTerm = null) => {
         try {
             const term = wikiTerm || plantName;
-            // 嘗試獲取中文維基百科資料
             const res = await fetch(`https://zh.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(term)}`);
             if(!res.ok) throw new Error();
             return await res.json();
         } catch(e) { return null; }
     };
 
+    let currentSound = null; // To manage playing audio
+
     // --- Initialization ---
     document.addEventListener('DOMContentLoaded', () => {
+        if(typeof amphibians === 'undefined') {
+            alert("錯誤：找不到 frogs.js 資料庫檔案。請確保兩個檔案在同一目錄。");
+            return;
+        }
         renderGuide();
         document.getElementById('db-count').innerText = amphibians.length;
         
-        // 每日一植日期
+        // Daily Date
         const today = new Date();
         const dateStr = `${today.getFullYear()} / ${today.getMonth()+1} / ${today.getDate()}`;
         document.getElementById('daily-date-display').innerText = dateStr;
@@ -557,12 +429,19 @@
         btn.classList.add('active');
         window.scrollTo(0, 0);
 
+        // Stop any audio when switching tabs
+        if(currentSound) { currentSound.pause(); currentSound = null; }
+        if(soundState.audio) { soundState.audio.pause(); soundState.audio = null; }
+
         if (tab !== 'quiz') quitQuiz();
+        if (tab !== 'sound') quitSoundQuiz();
     }
 
-    // --- Guide ---
+    // --- Guide Logic ---
     let currentFilter = 'all';
     function renderGuide() {
+        if(typeof amphibians === 'undefined') return;
+        
         const grid = document.getElementById('guide-grid');
         grid.innerHTML = '';
         const term = document.getElementById('search-input').value.toLowerCase();
@@ -570,7 +449,7 @@
         const list = amphibians.filter(p => {
             let matchCat = false;
             if(currentFilter === 'all') matchCat = true;
-            else if(currentFilter === '赤蛙') matchCat = p.cat === '赤蛙' || p.cat === '叉舌蛙'; // 合併顯示
+            else if(currentFilter === '赤蛙') matchCat = p.cat === '赤蛙' || p.cat === '叉舌蛙';
             else if(currentFilter === '保育') matchCat = p.status.includes('保育');
             else if(currentFilter === '特有種') matchCat = p.status.includes('特有種');
             else if(currentFilter === '外來種') matchCat = p.status.includes('外來種') || p.cat === '外來種';
@@ -583,7 +462,11 @@
         list.forEach(p => {
             const el = document.createElement('div');
             el.className = 'plant-card';
+            // Add sound icon if sound exists
+            const soundIcon = p.sound ? `<span class="has-sound-icon">🎵</span>` : '';
+            
             el.innerHTML = `
+                ${soundIcon}
                 <div class="p-name">${p.name}</div>
                 <div class="p-cat">${p.eng.split(' ')[0]}...</div>
                 <div class="status-badge ${getStatusClass(p.status)}">${p.status}</div>
@@ -606,11 +489,9 @@
 
     function flipDailyCard() {
         if (isDailyFlipped) return;
-        
         const cardInner = document.getElementById('daily-card-inner');
         cardInner.classList.add('is-flipped');
         isDailyFlipped = true;
-        
         loadDailyPlantData();
     }
     
@@ -656,8 +537,9 @@
         }
     }
 
+    // --- Modal & Sound Player ---
+    let modalAudioObj = null;
 
-    // --- Modal ---
     async function openModal(plant) {
         const modal = document.getElementById('modal');
         const img = document.getElementById('m-img');
@@ -676,6 +558,18 @@
         badge.innerText = plant.status;
         badge.className = `status-badge ${getStatusClass(plant.status)}`;
 
+        // Setup Audio Button
+        const audioBtn = document.getElementById('m-play-btn');
+        if (plant.sound) {
+            audioBtn.classList.remove('disabled');
+            audioBtn.innerHTML = "<span>🔊 播放鳴叫聲</span>";
+            audioBtn.onclick = () => playModalSound(plant.sound);
+        } else {
+            audioBtn.classList.add('disabled');
+            audioBtn.innerHTML = "<span>🔇 暫無聲音資料</span>";
+            audioBtn.onclick = null;
+        }
+
         const data = await getWikiData(plant.name, plant.wikiTerm);
         if(data) {
             document.getElementById('m-desc').innerText = data.extract || "無詳細摘要";
@@ -693,13 +587,207 @@
         }
     }
 
+    function playModalSound(url) {
+        if(modalAudioObj) {
+            modalAudioObj.pause();
+            modalAudioObj = null;
+            document.getElementById('m-play-btn').innerHTML = "<span>🔊 播放鳴叫聲</span>";
+            return;
+        }
+        
+        modalAudioObj = new Audio(url);
+        modalAudioObj.onerror = function() {
+            alert(`播放失敗！\n找不到檔案：${url}\n請確認已下載該 MP3 並放入 sounds 資料夾。`);
+            document.getElementById('m-play-btn').innerHTML = "<span>🔊 播放鳴叫聲</span>";
+            modalAudioObj = null;
+        };
+
+        modalAudioObj.play().catch(e => console.error(e));
+        document.getElementById('m-play-btn').innerHTML = "<span>⏹️ 停止播放</span>";
+        
+        modalAudioObj.onended = () => {
+            modalAudioObj = null;
+            document.getElementById('m-play-btn').innerHTML = "<span>🔊 播放鳴叫聲</span>";
+        };
+    }
+
     function closeModal(e) {
         if(!e || e.target.id === 'modal') {
             document.getElementById('modal').style.display = 'none';
+            if(modalAudioObj) {
+                modalAudioObj.pause();
+                modalAudioObj = null;
+            }
         }
     }
 
-    // --- Quiz ---
+    // --- Sound Quiz Logic (NEW) ---
+    let soundState = { pool: [], queue: [], idx: 0, score: 0, answering: false, audio: null };
+
+    function startSoundQuiz() {
+        // Filter frogs that actually have sound defined (not null)
+        let pool = amphibians.filter(a => a.sound !== null).sort(() => Math.random() - 0.5);
+        
+        if (pool.length < 4) {
+            alert("目前資料庫中設定有聲音的蛙類不足以進行測驗 (需至少4種)。");
+            return;
+        }
+
+        soundState = { pool: pool, queue: pool.slice(0, 5), idx: 0, score: 0, answering: false, audio: null };
+        document.getElementById('sound-menu').style.display = 'none';
+        document.getElementById('sound-result').style.display = 'none';
+        document.getElementById('sound-play').style.display = 'block';
+        document.getElementById('s-score').innerText = 0;
+        loadSoundQuestion();
+    }
+
+    function loadSoundQuestion() {
+        if(soundState.idx >= 5) { finishSoundQuiz(); return; }
+
+        const plant = soundState.queue[soundState.idx];
+        soundState.answering = true;
+        
+        // Setup Audio
+        soundState.audio = new Audio(plant.sound);
+        soundState.audio.onerror = function() {
+            alert(`題目載入失敗：找不到 ${plant.name} 的聲音檔 (${plant.sound})`);
+        };
+
+        document.getElementById('s-progress').innerText = `${soundState.idx+1} / 5`;
+        document.getElementById('s-reveal-card').style.display = 'none';
+        
+        // Hide image initially
+        document.getElementById('s-rev-img').style.display = 'none';
+        document.getElementById('s-rev-img').src = '';
+        
+        document.getElementById('s-next-btn').style.display = 'none';
+        document.getElementById('s-feedback').innerText = '';
+        
+        // Reset player UI
+        const spText = document.querySelector('.sp-text');
+        const spIcon = document.querySelector('.sp-icon');
+        spText.innerText = "點擊播放聲音";
+        spIcon.innerText = "▶️";
+        document.getElementById('wave-anim').classList.remove('active');
+
+        // Options
+        let opts = [plant];
+        let wrongPool = amphibians.filter(p => p.name !== plant.name);
+        for(let i=0; i<3; i++) opts.push(wrongPool.splice(Math.floor(Math.random() * wrongPool.length), 1)[0]);
+        opts.sort(() => Math.random() - 0.5);
+
+        document.getElementById('s-opt-container').innerHTML = opts.map(p => 
+            `<button class="opt-btn" onclick="checkSoundAnswer(this, '${p.name}')">${p.name}</button>`
+        ).join('');
+    }
+
+    function playQuizSound() {
+        if(!soundState.audio) return;
+        
+        const spText = document.querySelector('.sp-text');
+        const spIcon = document.querySelector('.sp-icon');
+        
+        if(soundState.audio.paused) {
+            soundState.audio.play();
+            spText.innerText = "播放中...";
+            spIcon.innerText = "🔊";
+            document.getElementById('wave-anim').classList.add('active');
+            soundState.audio.onended = () => {
+                spText.innerText = "再次播放";
+                spIcon.innerText = "▶️";
+                document.getElementById('wave-anim').classList.remove('active');
+            };
+        } else {
+            soundState.audio.pause();
+            soundState.audio.currentTime = 0;
+            spText.innerText = "點擊播放聲音";
+            spIcon.innerText = "▶️";
+            document.getElementById('wave-anim').classList.remove('active');
+        }
+    }
+
+    function checkSoundAnswer(btn, name) {
+        if(!soundState.answering) return;
+        soundState.answering = false;
+
+        // Stop audio
+        if(soundState.audio) {
+            soundState.audio.pause();
+            document.getElementById('wave-anim').classList.remove('active');
+        }
+        
+        const correct = soundState.queue[soundState.idx];
+        const isRight = name === correct.name;
+
+        if(isRight) {
+            btn.classList.add('correct');
+            document.getElementById('s-feedback').innerText = "⭕ 答對了！耳朵真靈！";
+            document.getElementById('s-feedback').style.color = "green";
+            soundState.score += 20;
+        } else {
+            btn.classList.add('wrong');
+            document.getElementById('s-feedback').innerText = `❌ 答案是：${correct.name}`;
+            document.getElementById('s-feedback').style.color = "red";
+            document.querySelectorAll('#s-opt-container .opt-btn').forEach(b => {
+                if(b.innerText === correct.name) b.classList.add('correct');
+            });
+        }
+        document.getElementById('s-score').innerText = soundState.score;
+        document.getElementById('s-next-btn').style.display = 'block';
+
+        // Reveal Information and Image
+        const rev = document.getElementById('s-reveal-card');
+        rev.style.display = 'block';
+        document.getElementById('s-rev-name').innerText = correct.name;
+        document.getElementById('s-rev-status').innerText = correct.status;
+        document.getElementById('s-rev-status').className = `status-badge ${getStatusClass(correct.status)}`;
+        
+        // Load Image dynamically
+        const img = document.getElementById('s-rev-img');
+        const loader = document.getElementById('s-rev-loader');
+        img.style.display = 'none';
+        loader.style.display = 'block';
+
+        getWikiData(correct.name, correct.wikiTerm).then(d => {
+            document.getElementById('s-rev-desc').innerText = d ? (d.extract.substring(0, 80) + "...") : "無資料";
+            const src = d && (d.originalimage ? d.originalimage.source : (d.thumbnail ? d.thumbnail.source : null));
+            
+            loader.style.display = 'none';
+            if(src) { 
+                img.src = src; 
+                img.style.display = 'block'; 
+            } else {
+                img.style.display = 'none';
+            }
+        });
+    }
+
+    function nextSoundQuestion() {
+        soundState.idx++;
+        loadSoundQuestion();
+    }
+
+    function finishSoundQuiz() {
+        document.getElementById('sound-play').style.display = 'none';
+        document.getElementById('sound-result').style.display = 'block';
+        document.getElementById('s-final-score').innerText = soundState.score;
+        
+        let msg = "";
+        if(soundState.score === 100) msg = "🎶 根本是聲納等級的耳朵！";
+        else if(soundState.score >= 60) msg = "👂 很不錯，對大自然很有感覺喔！";
+        else msg = "🙉 可能要挖一下耳朵再試試看？";
+        document.getElementById('s-final-comment').innerText = msg;
+    }
+
+    function quitSoundQuiz() {
+        if(soundState.audio) soundState.audio.pause();
+        document.getElementById('sound-play').style.display = 'none';
+        document.getElementById('sound-result').style.display = 'none';
+        document.getElementById('sound-menu').style.display = 'block';
+    }
+
+
+    // --- Visual Quiz Logic (Legacy) ---
     let gameState = { pool: [], queue: [], idx: 0, score: 0, answering: false };
     let retryCount = 0;
 
@@ -830,5 +918,4 @@
 </script>
 
 </body>
-
 </html>
